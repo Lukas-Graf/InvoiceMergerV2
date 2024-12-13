@@ -1,6 +1,5 @@
 """ 
-File containing all functions for the main multi-
-page app
+File containing all functions for the main multipage app
 
 File is written in pylint standard
 """
@@ -20,13 +19,12 @@ from Config import Config
 from Invoice import Invoice
 from PredictionService import PredictionService
 
-
-
 if "config" not in st.session_state:
     st.session_state.config = Config()
 
 if "invoice" not in st.session_state:
     st.session_state.invoice = Invoice()
+
 
 @st.cache_resource
 def load_detection_model() -> PredictionService:
@@ -38,6 +36,7 @@ def load_detection_model() -> PredictionService:
     PredictionsService (Instance)
     """
     return PredictionService(confidence=0.3)
+
 
 @st.cache_data
 def get_roi(uploaded_images: list) -> None:
@@ -61,7 +60,7 @@ def get_roi(uploaded_images: list) -> None:
     else:
         log.get_logger().info(f"{img_length} invoices were uploaded")
 
-    #Delete old files
+    # Delete old files
     for file in os.listdir(f"{st.session_state.config.folder_src()}/temp/"):
         os.remove(f"src/temp/{file}")
 
@@ -73,7 +72,7 @@ def get_roi(uploaded_images: list) -> None:
         for img in os.listdir(f"{st.session_state.config.folder_src()}/temp/"):
             detection_model.extract_detection(
                 img=f"{st.session_state.config.folder_src()}/temp/{img}"
-                )
+            )
 
     return None
 
@@ -92,7 +91,7 @@ def get_total_price() -> float:
         if str(img).startswith("price"):
             total_part = detection_model.extract_text(
                 img=img
-                )
+            )
             total += total_part
 
     return round(total, 2)
@@ -140,7 +139,7 @@ def write_invoice(paypal_email: str, hourly_rate: float, hours_worked: float, co
 #         URL of app which should be pinged
 #     ping_interval : int, optional (default=86_400)
 #         Interval in which the app should be pinged (1 day)
-    
+
 #     Returns
 #     -------
 #     NoReturn
@@ -154,7 +153,7 @@ def write_invoice(paypal_email: str, hourly_rate: float, hours_worked: float, co
 #                 log.get_logger().info(f"Pinged {url} successfully")
 #             else:
 #                 log.get_logger().error(f"Failed to ping {url}")
-            
+
 #         except Exception as e:
 #             log.get_logger().error(f"Error pinging {url}: {e}")
 
@@ -162,6 +161,8 @@ def write_invoice(paypal_email: str, hourly_rate: float, hours_worked: float, co
 
 
 detection_model = load_detection_model()
+
+
 # -------Streamlit------- #
 def main() -> None:
     """ 
@@ -190,7 +191,7 @@ def main() -> None:
     with st.form("my-form", clear_on_submit=True):
         uploaded_images = st.file_uploader(
             "Rechnungen auswählen", type=["jpg", "jpeg", "png"], accept_multiple_files=True
-            )
+        )
 
         submitted = st.form_submit_button("Upload files!")
 
@@ -202,7 +203,7 @@ def main() -> None:
                     hourly_rate=hourly_rate,
                     hours_worked=hours_worked,
                     cost_deduction=cost_deduction
-                    )
+                )
             st.success("Done!")
             finished = True
 
@@ -210,7 +211,6 @@ def main() -> None:
         with open("invoice_final.pdf", 'rb') as f:
             st.download_button("Download Invoice", f, file_name="invoice_final.pdf")
         finished = False
-
 
 
 if __name__ == '__main__':

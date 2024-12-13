@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import logger as log
 
 
-
 class ImageProcessing:
     """
     Class defining all the ImageProcessing methods for Model Prediction and OCR
@@ -60,7 +59,7 @@ class ImageProcessing:
         Shows given image
     """
 
-    def __init__(self, img: Any, visualize: bool =False):
+    def __init__(self, img: Any, visualize: bool = False):
         self.visualize = visualize
         self.__logger = log.get_logger()
 
@@ -71,10 +70,9 @@ class ImageProcessing:
         else:
             self.__logger.error(f"Img has to be of type str or np.ndarray not {type(img)}")
             raise TypeError(f"Img has to be of type str or np.ndarray not {type(img)}")
-        
 
     @staticmethod
-    def show_plot(img: str, method: str ="viridis") -> None:
+    def show_plot(img: str, method: str = "viridis") -> None:
         """
         Visualizes the image as a plot
 
@@ -101,7 +99,6 @@ class ImageProcessing:
         plt.show()
 
         return None
-
 
     @staticmethod
     def model_preprocess(img: Any) -> tf.Tensor:
@@ -130,7 +127,6 @@ class ImageProcessing:
         log.get_logger().info("Image was successfully preprocessed")
         return img_tensor_dim
 
-
     def invert_image(self) -> np.ndarray:
         """
         Invertes given image
@@ -148,8 +144,7 @@ class ImageProcessing:
         self.__logger.info("Image was inverted successfully")
         return inverted_img
 
-
-    def binarize_image(self, thresh: int =110, max_val: int = 230) -> np.ndarray:
+    def binarize_image(self, thresh: int = 110, max_val: int = 230) -> np.ndarray:
         """
         Binarizes given image in a defined area (thresh <= color_channel <= max_val)
 
@@ -167,16 +162,15 @@ class ImageProcessing:
 
         img_grayscale = self.__grayscale(self.img)
         thresh, img_bw = cv2.threshold(img_grayscale,
-                                      thresh=thresh,
-                                      maxval=max_val,
-                                      type=cv2.THRESH_BINARY)
+                                       thresh=thresh,
+                                       maxval=max_val,
+                                       type=cv2.THRESH_BINARY)
 
         if self.visualize:
             self.__show_img(img_bw, "ImageBlackWhite")
 
         self.__logger.info("Image was binarized successfully")
         return img_bw
-
 
     def noise_removal(self) -> np.ndarray:
         """
@@ -202,8 +196,7 @@ class ImageProcessing:
         self.__logger.info("Image-Noise was removed successfully")
         return img_blur
 
-
-    def change_font(self, mode: str ="thick") -> np.ndarray:
+    def change_font(self, mode: str = "thick") -> np.ndarray:
         """
         Changes the font of a given image to 'thick' or 'thin'
 
@@ -235,7 +228,6 @@ class ImageProcessing:
         self.__logger.info("Font was changed successfully")
         return img
 
-
     def rmv_border(self) -> np.ndarray:
         """
         Removes border of a given image
@@ -248,12 +240,12 @@ class ImageProcessing:
         img = self.img
         img_grayscale = self.__grayscale(img)
         contours, _ = cv2.findContours(img_grayscale,
-                                              cv2.RETR_EXTERNAL,
-                                              cv2.CHAIN_APPROX_SIMPLE)
-        cnt_sorted = sorted(contours, key=lambda x:cv2.contourArea(x))
+                                       cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)
+        cnt_sorted = sorted(contours, key=lambda x: cv2.contourArea(x))
         cnt = cnt_sorted[-1]
         x, y, w, h = cv2.boundingRect(cnt)
-        crop = img[y:y+h, x:x+w]
+        crop = img[y:y + h, x:x + w]
 
         if self.visualize:
             self.__show_img(crop, "ImageNoBorder")
@@ -261,8 +253,7 @@ class ImageProcessing:
         self.__logger.info("Border was removed successfully")
         return crop
 
-
-    def add_border(self, color: List[int] =[255]*3, measures: List[int] =[150]*4) -> np.ndarray:
+    def add_border(self, color: List[int] = [255] * 3, measures: List[int] = [150] * 4) -> np.ndarray:
         """
         Adds border to given image
 
@@ -289,12 +280,10 @@ class ImageProcessing:
         self.__logger.info("Border was added successfully")
         return img_border
 
-
     def rotate_image(self) -> np.ndarray:
         pass
 
-
-    #----------Private Methods----------#
+    # ----------Private Methods----------#
     def __grayscale(self, img: np.ndarray) -> np.ndarray:
         """
         Changes color channels from bgr to gray
@@ -310,7 +299,6 @@ class ImageProcessing:
         """
 
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
 
     def __show_img(self, img: np.ndarray, img_name: str) -> None:
         """
@@ -330,7 +318,6 @@ class ImageProcessing:
         cv2.imshow(img_name, resized)
         cv2.waitKey(0)
         return None
-
 
 
 if __name__ == "__main__":
